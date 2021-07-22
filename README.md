@@ -1,7 +1,7 @@
 # Tidal Connect Docker image (for RaspberryPi)
 
 Image based on https://github.com/shawaj/ifi-tidal-release and https://github.com/seniorgod/ifi-tidal-release. 
-Please visit https://www.raspberrypi.org/forums/viewtopic.php?t=297771 for full information on the backround of this project.
+Please visit https://www.raspberrypi.org/forums/viewtopic.php?t=297771 for full information on the background of this project.
 
 # Why this Docker Port
 
@@ -52,7 +52,6 @@ docker-compose down
 
 # *** Other Stuff *** #
 
-
 Running as daemon without using docker-compose 
 ```
  docker run -td \
@@ -89,3 +88,32 @@ docker run -ti \
 If you need to alter any parameters, just change the entrypoint.sh to contain whatever settinsgs you need
 The entrypoint.sh file/command is executed upon start of the container and mounted via docker-compose.
 
+
+## Change Audio Device to Audio Hat
+
+If audio doesn't play through your hat, you may need to explicitly designate the playback device in entrypoint.sh. Add the following line to your entrypoint.sh, changing the playback device to match yours. You can pull the device string from the "List Devices" docker command mentioned earlier. _(via [prepare the configuration of tidal-connect-application](https://github.com/seniorgod/ifi-tidal-release/blob/master/tidal_connect_application_as_docker_container/ifi_docker.md#prepare-the-configuration-of-tidal-connect-application) from the original [`seniorgod/ifi-tidal-release` project](https://github.com/seniorgod/ifi-tidal-release))_
+```
+    --playback-device "snd_rpi_hifiberry_dacplus: HiFiBerry DAC+ Pro HiFi pcm512x-hifi-0 (hw:0,0)" \
+```
+
+Your modified entrypoint.sh should resemble:
+
+```
+#!/bin/bash
+
+echo "Starting Tidal Connect.."
+
+/app/ifi-tidal-release/bin/tidal_connect_application \
+   --tc-certificate-path "/app/ifi-tidal-release/id_certificate/IfiAudio_ZenStream.dat" \
+   -f "Hifiberry Tidal Connect" \
+   --codec-mpegh true \
+   --codec-mqa false \
+   --model-name "Hifiberry Tidal Connect" \
+   --disable-app-security false \
+   --disable-web-security false \
+   --enable-mqa-passthrough false \
+   --playback-device "snd_rpi_hifiberry_dacplus: HiFiBerry DAC+ Pro HiFi pcm512x-hifi-0 (hw:0,0)" \
+   --log-level 3 \
+   --enable-websocket-log "0" \
+
+echo "Tidal Connect Container Stopped.."
