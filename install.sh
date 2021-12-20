@@ -259,4 +259,7 @@ log INFO "Starting TIDAL Connect Service."
 log INFO "Restarting Beocreate 2 Service."
 ./restart_beocreate2.sh
 
+log INFO "Restarting audiocontrol2 Service."
+systemctl restart audiocontrol2.service
+
 log INFO "Finished, exiting."
