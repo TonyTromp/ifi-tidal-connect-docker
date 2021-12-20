@@ -11,6 +11,7 @@ running_environment()
   echo "  FRIENDLY_NAME:            ${FRIENDLY_NAME}"
   echo "  MODEL_NAME:               ${MODEL_NAME}"
   echo "  BEOCREATE_SYMLINK_FOLDER: ${BEOCREATE_SYMLINK_FOLDER}"
+  echo "  AUDIOCONTROL2_SYMLINK_MODUL: ${AUDIOCONTROL2_SYMLINK_MODUL}"
   echo "  DOCKER_DNS:               ${DOCKER_DNS}"
   echo "  DOCKER_IMAGE:             ${DOCKER_IMAGE}"
   echo "  BUILD_OR_PULL:            ${BUILD_OR_PULL}"
@@ -29,6 +30,7 @@ usage()
   echo "  [FRIENDLY_NAME=<FRIENDLY_NAME>] \\"
   echo "  [MODEL_NAME=<MODEL_NAME>] \\"
   echo "  [BEOCREATE_SYMLINK_FOLDER=<BEOCREATE_SYMLINK_FOLDER>] \\"
+  echo "  [AUDIOCONTROL2_SYMLINK_MODUL=<AUDIOCONTROL2_SYMLINK_MODUL>] \\"
   echo "  [DOCKER_DNS=<DOCKER_DNS>] \\"
   echo "  [DOCKER_IMAGE=<DOCKER_IMAGE>] \\"
   echo "  [BUILD_OR_PULL=<build|pull>] \\"
@@ -38,6 +40,7 @@ usage()
   echo "    [-f <FRIENDLY_NAME>] \\"
   echo "    [-m <MODEL_NAME>] \\"
   echo "    [-b <BEOCREATE_SYMLINK_FOLDER>] \\"
+  echo "    [-a <AUDIOCONTROL2_SYMLINK_MODUL>] \\"
   echo "    [-d <DOCKER_DNS>] \\"
   echo "    [-i <Docker Image>] \\"
   echo "    [-p <build|pull>] \\"
@@ -48,6 +51,7 @@ usage()
   echo "  FRIENDLY_NAME:            ${FRIENDLY_NAME_DEFAULT}"
   echo "  MODEL_NAME:               ${MODEL_NAME_DEFAULT}"
   echo "  BEOCREATE_SYMLINK_FOLDER: ${BEOCREATE_SYMLINK_FOLDER_DEFAULT}"
+  echo "  AUDIOCONTROL2_SYMLINK_MODUL: ${AUDIOCONTROL2_SYMLINK_MODUL_DEFAULT}"
   echo "  DOCKER_DNS:               ${DOCKER_DNS_DEFAULT}"
   echo "  DOCKER_IMAGE:             ${DOCKER_IMAGE_DEFAULT}"
   echo "  BUILD_OR_PULL:            ${BUILD_OR_PULL_DEFAULT}"
@@ -74,6 +78,7 @@ usage()
 FRIENDLY_NAME_DEFAULT=${HOSTNAME}
 MODEL_NAME_DEFAULT=${HOSTNAME}
 BEOCREATE_SYMLINK_FOLDER_DEFAULT="/opt/beocreate/beo-extensions/tidal"
+AUDIOCONTROL2_SYMLINK_MODUL_DEFAULT="/opt/audiocontrol2/ac2/players/tidal.py"
 DOCKER_DNS_DEFAULT="8.8.8.8"
 DOCKER_IMAGE_DEFAULT="edgecrush3r/tidal-connect:latest"
 BUILD_OR_PULL_DEFAULT="pull"
@@ -84,6 +89,7 @@ MQA_CODEC_DEFAULT="false"
 FRIENDLY_NAME=${FRIENDLY_NAME:-${FRIENDLY_NAME_DEFAULT}}
 MODEL_NAME=${MODEL_NAME:-${MODEL_NAME_DEFAULT}}
 BEOCREATE_SYMLINK_FOLDER=${BEOCREATE_SYMLINK_FOLDER:-${BEOCREATE_SYMLINK_FOLDER_DEFAULT}}
+AUDIOCONTROL2_SYMLINK_MODUL=${AUDIOCONTROL2_SYMLINK_MODUL:-${AUDIOCONTROL2_SYMLINK_MODUL_DEFAULT}}
 DOCKER_DNS=${DOCKER_DNS:-${DOCKER_DNS_DEFAULT}}
 DOCKER_IMAGE=${DOCKER_IMAGE:-${DOCKER_IMAGE_DEFAULT}}
 BUILD_OR_PULL=${BUILD_OR_PULL:-${BUILD_OR_PULL_DEFAULT}}
@@ -105,6 +111,9 @@ do
       ;;
     b)
       BEOCREATE_SYMLINK_FOLDER=${OPTARG}
+      ;;
+    a)
+      AUDIOCONTROL2_SYMLINK_MODUL=${OPTARG}
       ;;
     d)
       DOCKER_DNS=${OPTARG}
@@ -222,6 +231,20 @@ fi
 echo  "Adding TIDAL Connect Source to Beocreate UI."
 ln -s ${PWD}/beocreate/beo-extensions/tidal ${BEOCREATE_SYMLINK_FOLDER}
 log INFO "Finished adding TIDAL Connect Source to Beocreate."
+
+# Add TIDAL to Audiocontrol
+echo "Adding TIDAL to Audiocontrol2."
+if [ -L "${AUDIOCONTROL2_SYMLINK_MODUL}" ]; then
+  # Already installed... remove symlink and re-install
+  log INFO "TIDAL Connect extension (audiocontrol2) found, removing previous install."
+  rm ${AUDIOCONTROL2_SYMLINK_MODUL}
+fi
+sed -i 's@from ac2.players.mpdcontrol import MPDControl@from ac2.players.tidal import TidalControl\nfrom ac2.players.mpdcontrol import MPDControl@' /opt/audiocontrol2/audiocontrol2.py
+sed -i 's@# Native MPD backend and metadata processor@if "tidal" in config.sections():\n        tidal = TidalControl()\n        mpris.register_nonmpris_player("tidal",tidal)\n        logging.info("registered non-MPRIS tidal backend")\n    # Native MPD backend and metadata processor@' \
+  /opt/audiocontrol2/audiocontrol2.py
+echo '[tidal]' >> /etc/audiocontrol2.conf
+ln -s ${PWD}/audiocontrol2/ac2/players/tidal.py ${AUDIOCONTROL2_SYMLINK_MODUL}
+log INFO "Finished adding TIDAL Connect to Audiocontrol2."
 
 log INFO "Installation Completed."
 

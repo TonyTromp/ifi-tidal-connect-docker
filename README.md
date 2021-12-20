@@ -48,11 +48,13 @@ Usage:
   [FRIENDLY_NAME=<FRIENDLY_NAME>] \
   [MODEL_NAME=<MODEL_NAME> ] \
   [BEOCREATE_SYMLINK_FOLDER=<BEOCREATE_SYMLINK_FOLDER> ] \
+  [AUDIOCONTROL2_SYMLINK_MODUL=<AUDIOCONTROL2_SYMLINK_MODUL> ] \
   [DOCKER_DNS=<DOCKER_DNS> ] \
   ./install.sh \
     [-f <FRIENDLY_NAME>] \
     [-m <MODEL_NAME>] \
     [-b <BEOCREATE_SYMLINK_FOLDER>] \
+    [-a <AUDIOCONTROL2_SYMLINK_MODUL>] \
     [-d <DOCKER_DNS>] \
     [-i <Docker Image>] \
     [-p <build|pull>]
@@ -61,6 +63,7 @@ Defaults:
   FRIENDLY_NAME:            hifiberry
   MODEL_NAME:               hifiberry
   BEOCREATE_SYMLINK_FOLDER: /opt/beocreate/beo-extensions/tidal
+  AUDIOCONTROL2_SYMLINK_MODUL: /opt/audiocontrol2/ac2/players/tidal.py
   DOCKER_DNS:               8.8.8.8
   DOCKER_IMAGE:             edgecrush3r/tidal-connect:latest
   BUILD_OR_PULL:            pull
@@ -74,6 +77,7 @@ Running environment:
   FRIENDLY_NAME:            hifiberry
   MODEL_NAME:               hifiberry
   BEOCREATE_SYMLINK_FOLDER: /opt/beocreate/beo-extensions/tidal
+  AUDIOCONTROL2_SYMLINK_MODUL: /opt/audiocontrol2/ac2/players/tidal.py
   DOCKER_DNS:               8.8.8.8
   DOCKER_IMAGE:             tidal-connect:latest
   BUILD_OR_PULL:            build
@@ -93,6 +97,7 @@ Running environment:
   FRIENDLY_NAME:            hifipi1
   MODEL_NAME:               hifipi1
   BEOCREATE_SYMLINK_FOLDER: /opt/beocreate/beo-extensions/tidal
+  AUDIOCONTROL2_SYMLINK_MODUL: /opt/audiocontrol2/ac2/players/tidal.py
   DOCKER_DNS:               8.8.8.8
   DOCKER_IMAGE:             edgecrush3r/tidal-connect:latest
   BUILD_OR_PULL:            pull
@@ -159,6 +164,7 @@ Running environment:
   FRIENDLY_NAME:            hifipi1
   MODEL_NAME:               hifipi1
   BEOCREATE_SYMLINK_FOLDER: /opt/beocreate/beo-extensions/tidal
+  AUDIOCONTROL2_SYMLINK_MODUL: /opt/audiocontrol2/ac2/players/tidal.py
   DOCKER_DNS:               8.8.8.8
   DOCKER_IMAGE:             tidal-connect:latest
   BUILD_OR_PULL:            build
